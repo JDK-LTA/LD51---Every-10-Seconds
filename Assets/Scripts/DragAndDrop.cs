@@ -12,11 +12,13 @@ public class DragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
     private Vector3 velocity = Vector3.zero;
     private bool isDragging;
     public Slot newSlot;
-    private Slot currentSlot;
+    private Slot oldSlot;
 
     private void Awake()
     {
         rectTransform = transform as RectTransform;
+        oldSlot = newSlot;
+        StartCoroutine(MovingUpdate());
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -29,6 +31,8 @@ public class DragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
         GetComponent<CanvasGroup>().interactable = false;
         GetComponent<CanvasGroup>().blocksRaycasts = false;
         isDragging = true;
+        StartCoroutine(FollowMouse());
+
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -41,42 +45,54 @@ public class DragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
         GetComponent<CanvasGroup>().interactable = true;
         GetComponent<CanvasGroup>().blocksRaycasts = true;
         isDragging = false;
-    }
-
-    void FollowMouse()
-    {
-        rectTransform.position = Vector3.SmoothDamp(rectTransform.position, Input.mousePosition, ref velocity, dampSpeed);
+        StartCoroutine(MovingUpdate());
     }
 
     public void MoveToSlot()
     {
-        if(currentSlot != newSlot)
-        {
-            rectTransform.position = Vector3.SmoothDamp(rectTransform.position, currentSlot.rectTransform.position, ref velocity, dampSpeed*0.01f);
-            currentSlot = newSlot;
-        }
-        else
-        {
-            rectTransform.position = Vector3.SmoothDamp(rectTransform.position, currentSlot.rectTransform.position, ref velocity, dampSpeed);
-        }
-        
-        
+            rectTransform.position = Vector3.SmoothDamp(rectTransform.position, newSlot.rectTransform.position, ref velocity, dampSpeed); 
+    }
+    public void MoveToNewSlot()
+    {
+            rectTransform.position = Vector3.SmoothDamp(rectTransform.position, newSlot.rectTransform.position, ref velocity, dampSpeed * 0.2f);
+            oldSlot = newSlot;
     }
 
-    private void FixedUpdate()
+    IEnumerator FollowMouse()
     {
-        if (isDragging)
+        while (isDragging)
         {
-            FollowMouse();
+            rectTransform.position = Vector3.SmoothDamp(rectTransform.position, Input.mousePosition, ref velocity, dampSpeed);
+            yield return new WaitForFixedUpdate();
         }
-        else if (Vector2.Distance(rectTransform.position, newSlot.rectTransform.position) > 1f)
+        yield break;
+
+    }
+
+    IEnumerator MovingUpdate()
+    {
+        if (oldSlot == newSlot)
         {
-            MoveToSlot();
+            while (Vector2.Distance(rectTransform.position, newSlot.rectTransform.position) > 1f)
+            {
+                MoveToSlot();
+                yield return new WaitForFixedUpdate();
+            }
+            rectTransform.position = newSlot.rectTransform.position;
+            yield break;
         }
         else
         {
-            rectTransform.position = currentSlot.rectTransform.position;
+            print("whee");
+            while (Vector2.Distance(rectTransform.position, newSlot.rectTransform.position) > 1f)
+            {
+                MoveToNewSlot();
+                yield return new WaitForFixedUpdate();
+            }
+            rectTransform.position = newSlot.rectTransform.position;
+            yield break;
         }
         
+
     }
 }

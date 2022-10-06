@@ -57,12 +57,12 @@ public class TimeManager : MonoBehaviour
 
     private void LoopStartAction()
     {
-        print("Looping");
+        //print("Looping");
         debugRound++;
     }
 
     private void SectionAction()
     {
-        print("Section: " + _sectionCounter);
+        //print("Section: " + _sectionCounter);
     }
 }
