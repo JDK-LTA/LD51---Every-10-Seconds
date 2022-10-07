@@ -6,8 +6,10 @@ using UnityEngine.UI;
 
 public class TimeManager : MonoBehaviour
 {
+    public static TimeManager Instance;
+    
     [Header("References")] 
-    [SerializeField] private Image circleImage;
+    [SerializeField, Required] private Image circleImage;
     
     [Header("Variables")]
     [SerializeField, MinValue(0f)] private float fullTimer = 10f;
@@ -20,12 +22,15 @@ public class TimeManager : MonoBehaviour
     private float _t;
     private float _sectionTimer;
     private int _sectionCounter;
-    
-    
+
+    public int NOfDivisions => nOfDivisions;
+
+
     // Start is called before the first frame update
-    private void Start()
+    private void Awake()
     {
-        _sectionTimer = fullTimer / nOfDivisions;
+        Instance = this;
+        _sectionTimer = fullTimer / NOfDivisions;
     }
 
     // Update is called once per frame
@@ -38,7 +43,7 @@ public class TimeManager : MonoBehaviour
     {
         _t += Time.deltaTime;
 
-        debugFill = (float)_sectionCounter / nOfDivisions + _t / _sectionTimer / nOfDivisions;
+        debugFill = (float)_sectionCounter / NOfDivisions + _t / _sectionTimer / NOfDivisions;
         circleImage.fillAmount = debugFill;
 
         if (_t >= _sectionTimer)
@@ -47,7 +52,7 @@ public class TimeManager : MonoBehaviour
             _sectionCounter++;
             SectionAction();
 
-            if (_sectionCounter >= nOfDivisions)
+            if (_sectionCounter >= NOfDivisions)
             {
                 _sectionCounter = 0;
                 LoopStartAction();
@@ -64,5 +69,13 @@ public class TimeManager : MonoBehaviour
     private void SectionAction()
     {
         print("Section: " + _sectionCounter);
+
+        SlotTemp slotTemp = SlotManager.Instance.Slots[_sectionCounter];
+        if (slotTemp.filled)
+        {
+            slotTemp.Empty();
+            Card card = slotTemp.activeCard;
+            if (card) card.CardAction();
+        }
     }
 }
