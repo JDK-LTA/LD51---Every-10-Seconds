@@ -62,13 +62,13 @@ public class TimeManager : MonoBehaviour
 
     private void LoopStartAction()
     {
-        print("Looping");
+        //print("Looping");
         debugRound++;
     }
 
     private void SectionAction()
     {
-        print("Section: " + _sectionCounter);
+        //print("Section: " + _sectionCounter);
 
         SlotTemp slotTemp = SlotManager.Instance.Slots[_sectionCounter];
         if (slotTemp.filled)
