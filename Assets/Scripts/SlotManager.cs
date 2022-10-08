@@ -8,10 +8,13 @@ using UnityEngine.Serialization;
 public class SlotManager : MonoBehaviour
 {
     public static SlotManager Instance;
-    
-    [SerializeField, ReadOnly] private SlotTemp[] slots;
 
-    public SlotTemp[] Slots { get; set; }
+    [SerializeField] private GameObject slotPrefab;
+    [SerializeField] private Transform clockImageTransform;
+    [SerializeField] private float radiusOffsetForSlots = 5;
+    [SerializeField, ReadOnly] private Slot[] slots;
+
+    public Slot[] Slots { get => slots; set => slots = value; }
 
 
     private void Awake()
@@ -21,7 +24,31 @@ public class SlotManager : MonoBehaviour
 
     private void Start()
     {
-        slots = new SlotTemp[TimeManager.Instance.NOfDivisions];
+        slots = new Slot[TimeManager.Instance.NOfDivisions];
+
+        Vector2[] coords = FindCoordinates();
+        
+        for (int i = 0; i < TimeManager.Instance.NOfDivisions; i++)
+        {
+            slots[i] = Instantiate(slotPrefab,  clockImageTransform.position + new Vector3(coords[i].x, coords[i].y), Quaternion.identity, clockImageTransform).GetComponent<Slot>();
+        }
+    }
+
+    private Vector2[] FindCoordinates()
+    {
+        int nOfDivs = TimeManager.Instance.NOfDivisions;
+        
+        Vector2[] coords = new Vector2[nOfDivs];
+        float rad = radiusOffsetForSlots;
+
+        for (int i = 0; i < nOfDivs; i++)
+        {
+            float angle = i * (360 / nOfDivs);
+            float radian = (angle * Mathf.PI / 180);
+            coords[i] = new Vector2(0 + rad * Mathf.Sin(radian), 0 + rad * Mathf.Cos(radian));
+        }
+
+        return coords;
     }
 }
 
@@ -37,5 +64,3 @@ public class SlotTemp
         activeCard = null;
     }
 }
-
-

@@ -6,6 +6,6 @@ public class Card : MonoBehaviour
 {
     public void CardAction()
     {
-        
+        print("Action bitches");
     }
 }

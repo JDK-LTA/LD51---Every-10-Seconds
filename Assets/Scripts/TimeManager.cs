@@ -7,21 +7,23 @@ using UnityEngine.UI;
 public class TimeManager : MonoBehaviour
 {
     public static TimeManager Instance;
-    
-    [Header("References")] 
-    [SerializeField, Required] private Image circleImage;
-    
-    [Header("Variables")]
-    [SerializeField, MinValue(0f)] private float fullTimer = 10f;
+
+    [Header("References")] [SerializeField, Required]
+    private Image circleImage;
+
+    [Header("Variables")] [SerializeField, MinValue(0f)]
+    private float fullTimer = 10f;
+
     [SerializeField, MinValue(0)] private int nOfDivisions = 4;
 
-    [Header("Debug")] 
-    [SerializeField, ReadOnly] private int debugRound = 0;
+    [Header("Debug")] [SerializeField, ReadOnly]
+    private int debugRound = 0;
+
     [SerializeField, ReadOnly] private float debugFill = 0;
 
     private float _t;
     private float _sectionTimer;
-    private int _sectionCounter;
+    [SerializeField, ReadOnly] private int _sectionCounter;
 
     public int NOfDivisions => nOfDivisions;
 
@@ -50,13 +52,14 @@ public class TimeManager : MonoBehaviour
         {
             _t = 0;
             _sectionCounter++;
-            SectionAction();
-
+            
             if (_sectionCounter >= NOfDivisions)
             {
                 _sectionCounter = 0;
                 LoopStartAction();
             }
+
+            SectionAction();
         }
     }
 
@@ -70,12 +73,12 @@ public class TimeManager : MonoBehaviour
     {
         //print("Section: " + _sectionCounter);
 
-        SlotTemp slotTemp = SlotManager.Instance.Slots[_sectionCounter];
+        Slot slotTemp = SlotManager.Instance.Slots[_sectionCounter];
         if (slotTemp.filled)
         {
-            slotTemp.Empty();
             Card card = slotTemp.activeCard;
             if (card) card.CardAction();
+            slotTemp.Empty();
         }
     }
 }
