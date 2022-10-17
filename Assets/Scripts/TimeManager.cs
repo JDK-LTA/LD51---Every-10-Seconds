@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using NaughtyAttributes;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class TimeManager : MonoBehaviour
@@ -23,9 +24,11 @@ public class TimeManager : MonoBehaviour
 
     private float _t;
     private float _sectionTimer;
-    [SerializeField, ReadOnly] private int _sectionCounter;
+    [SerializeField, ReadOnly] private int sectionCounter;
 
     public int NOfDivisions => nOfDivisions;
+
+    public int SectionCounter => sectionCounter;
 
 
     // Start is called before the first frame update
@@ -45,17 +48,17 @@ public class TimeManager : MonoBehaviour
     {
         _t += Time.deltaTime;
 
-        debugFill = (float)_sectionCounter / NOfDivisions + _t / _sectionTimer / NOfDivisions;
+        debugFill = (float)SectionCounter / NOfDivisions + _t / _sectionTimer / NOfDivisions;
         circleImage.fillAmount = debugFill;
 
         if (_t >= _sectionTimer)
         {
             _t = 0;
-            _sectionCounter++;
+            sectionCounter = SectionCounter + 1;
             
-            if (_sectionCounter >= NOfDivisions)
+            if (SectionCounter >= NOfDivisions)
             {
-                _sectionCounter = 0;
+                sectionCounter = 0;
                 LoopStartAction();
             }
 
@@ -73,7 +76,7 @@ public class TimeManager : MonoBehaviour
     {
         //print("Section: " + _sectionCounter);
 
-        Slot slotTemp = SlotManager.Instance.Slots[_sectionCounter];
+        Slot slotTemp = SlotManager.Instance.Slots[SectionCounter];
         if (slotTemp.filled)
         {
             Card card = slotTemp.activeCard;

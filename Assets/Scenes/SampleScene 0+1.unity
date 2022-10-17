@@ -631,7 +631,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   circleImage: {fileID: 1173031040}
   fullTimer: 10
-  nOfDivisions: 4
+  nOfDivisions: 7
   debugRound: 0
   debugFill: 0
   _sectionCounter: 0
